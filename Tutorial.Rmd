@@ -1,0 +1,40 @@
+---
+title: "Interaktives Lerntutorial Data Science"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(readxl)
+library(tidyverse)
+salary <- read_xlsx("C:/Users/Tobi/OneDrive - reutlingen-university.de/Studium/Data Science-BigChungus/DatensatzBenni/Datensaetze/ITSalary2020.xlsx")
+```
+
+## Datenbasis
+
+### Der Datensatz
+
+Der Datensatz stammt aus einer anonymen Umfrage und thematisiert die Durchschnittsgehälter von IT-Angestellten.
+Dabei liegt der Fokus der Umfrage auf die Bezahlung in Deutschland ([IT Salary Survey](https://www.kaggle.com/datasets/parulpandey/2020-it-salary-survey-for-eu-region)).
+
+Hier ein Ausschnitt aus der Tabelle
+
+```{r view head}
+head(salary)
+```
+
+### Hypothesen
+
+Folgende Hypothesen haben wir aufgestellt und wollen diese im Verlauf dieses Tutorials Überprüfen:
+
+* Software Engineers werden im Schnitt am besten bezahlt.
+* Die Anzahl der beherrschten Sprachen korreliert nicht mit dem Verdienst.
+
+## Datenaufbereitung
+
+## Datenanalyse
+
+## Ergebnispräsentation
+
+## Teaminfos

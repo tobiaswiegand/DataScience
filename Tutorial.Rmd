@@ -224,7 +224,7 @@ median(alter)
 ### Varianz
 
 Die **Varianz** beschreibt ein Maß, das die Streuung der Werte eines Merkmals definiert - anders gesagt wie stark unterscheiden sich die Werte.<br> Eine höhere Varianz bedeutet, dass die Werte eines ausgesuchten Merkmals weiter auseinander liegen, während man aus einer niedrigen Varianz folgern kann, dass die Werte näher am Mittelwert liegen. Die Varianz ist allerdings nicht normiert weswegen es schwer zu berurteilen ist, ob diese groß oder klein ist. Eine Möglichkeit dies besser zu beurteilen ist die **Standardabweichung**<br>
-Die Berechnung der Varianz erfolgt über die var()-Funktion.
+Die Berechnung der Varianz erfolgt über die **var(subset)-Funktion**.
 Bitte ließ wieder das "Alter" aus dem bereinigten Datensatz aus und berechne damit die Varianz.
 
 ```{r variance, exercise = TRUE, exercise.eval = FALSE}
@@ -251,8 +251,8 @@ var(alter)
 
 ### Standardabweichung
 
-Die **Standardabweichung** ist wie die Varianz ein Maß, dass die Streuung der Werte eines Merkmals definiert. Dieses Maß beschreibt in diesem Fall die Durchschnittliche Streuung um den Mittelwert. Dieses Maß lässt sich auf in R auf mehrere weißen bestimmen.<br>
-Eine Möglichkeit ist die bestimmung mithilfe der Varianz. Die Standardabweichung ist definiert als die Wurzel aus der Varianz. Die zweite Möglichkeit ist die verwendung der sd()-Funktion (**S**tandard **D**eviation).
+Die **Standardabweichung** ist wie die Varianz ein Maß, dass die Streuung der Werte eines Merkmals definiert. Dieses Maß beschreibt in diesem Fall die durchschnittliche Streuung um den Mittelwert. Dieses Maß lässt sich auf in R auf mehrere weißen bestimmen.<br>
+Eine Möglichkeit ist die bestimmung mithilfe der Varianz. Die Standardabweichung ist definiert als die Wurzel aus der Varianz. Die zweite Möglichkeit ist die verwendung der **sd(subset)-Funktion** (**S**tandard **D**eviation).
 Bitte ließ wieder das "Alter" aus dem bereinigten Datensatz ein und berechne dann die Standardabweichung
 
 ```{r sd, exercise = TRUE, exercise.eval = FALSE}
@@ -281,9 +281,9 @@ sd(alter)
 
 ### Lineare Regression
 
-**Lineare Regression* wird verwendet, um eine Beziehung zwischen einer abhängigen Variable (Kriterium) und einer unabhängigen Variable (Prädiktoren) vorherzusagen.<br>
+**Lineare Regression** wird verwendet, um eine Beziehung zwischen einer **abhängigen Variable (Kriterium)** und einer **unabhängigen Variable (Prädiktoren)** vorherzusagen.<br>
 Ein Beispiel: Man könnte die Hypothese aufstellen, das Kinder und junge Erwachsene weniger Zahlen als ältere Personen.<br>
-Wir wollen also überprüfen, ob das Kriterium - die Fare, abhängig vom Alter - der Prädiktoren ist. Dafür können wir beide werte ersteinmal in ein Diagramm eintragen.
+Wir wollen also überprüfen, ob das Kriterium - der Ticket-Preis, abhängig vom Alter - der Prädiktoren ist. Dafür können wir beide werte ersteinmal in ein Diagramm eintragen.
 
 ```{r diagrammForLR}
 titanic_cleanTask <- titanic %>%
@@ -295,11 +295,99 @@ gezahlt <- titanic_cleanTask$fare
 plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Streudiagramm Alter - TicketPreis",pch=20)
 ```
 
-FÜr die Vorher
+FÜr die Überprüfung des Zusammenhangs können wir dann eine sogennante **Regressionsgerade** benutzen. Da es sich hierbei um eine lineare Regression handelt hat diese die form y = bx + c.<br>
+Dabei ist y der Kriteriumswert also der, den wir später vohersagen wollen und x der Prädiktorwert.<br>
+Für die Berechnung der Regressionsgeraden gibt es jetzt wieder zwei Möglichkeiten.<br>
+Die einfache Variante ist die Verwendung der in R eingebundenen **lm(subset ~ subset) Funktion**.<br>
+Mithilfe der **abline(data, col="gewünschteFarbe")-Funktion** kann diese dann ausgegeben werden.
+Füge in das untere Diagramm eine solche Regressionsgerade ein.
+
+```{r diagrammForLRUser, exercise = TRUE, exercise.eval = FALSE}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+
+alter <- titanic_cleanTask$age
+gezahlt <- titanic_cleanTask$fare
+
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Streudiagramm Alter - TicketPreis",pch=20)
+
+```
+```{r diagrammForLRUser-hint}
+"z  <- lm(y~x)
+abline(z,col=Farbe)"
+```
+
+```{r diagrammForLRUser-solution}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+
+alter <- titanic_cleanTask$age
+gezahlt <- titanic_cleanTask$fare
+
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Streudiagramm Alter - TicketPreis",pch=20)
+
+regression <- lm(alter ~ gezahlt)
+abline(regression, col="red",lwd=5)
+
+```
+
+Mithilfe dieser Gerade kannst du überprüfen, ob deine Hypothese wahr ist.<br>
+Für den zweiten Weg nutzen wir die Geradengleichung und brechnen die b und c werte. Der Vorteil dieser Methode ist es, das du auch ohne grafischen Plot deine Hypothese prüfen kannst. Denn ist der b Wert in der Geradengleichung positiv steigt diese und deine Hypothese wäre somit korrekt. Ist dieser negativ sinkt diese und deine Hypothese wäre falsch.<br>
+Für die Berechnung brauchst du die **Mittelwerte** die **Standardabweichungen** die **Kovarianz** und die **Korrelation** beider Merkmale. 
+
+### Kovarianz
+Die **Kovarianz** gibt an, in wiefern zwei Merkmale zusammenhängen, genauer, ob eine Variable ausschlaggebend für die Zu-oder abnahme einer anderen Variablen ist. Man kann die Kovarianz also nutzen um lineare Beziehungen zu prüfen.
+
+### Korrelation
+
+### Lineare Regression Teil 2
+Kommen wir nun zurück zum Beispiel aus dem ersten Teil der linearen Regression. Erzeugen wir zuerst wieder den Plot aus dem ersten Beispiel.<br>
+Im Anschluss können wir dann beide Geraden vergleichen.
+
+```{r diagrammForLRTwo}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+
+alter <- titanic_cleanTask$age
+gezahlt <- titanic_cleanTask$fare
+
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Regressionsgerade",pch=20,type="n")
+
+regression <- lm(alter ~ gezahlt)
+abline(regression, col="red",lwd=3)
+```
+
+Jetzt stellen wir die Regressionsgeradengleichung auf.<br>
+Diese hat die Form:
+**b = Standardabweichung(y)/Standardabweichung(x) * Korrelation**<br>
+**c = Standardabweichung(y)/Standardabweichung(x) * Korrelation * Mittelwert(x) + Mittelwert(y)**<br>
+**x** ist in unserem Fall das **Alter**<br>
+**y** ist der **Ticket-Preis**
+```{r equation}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+alter <- titanic_cleanTask$age
+gezahlt <- titanic_cleanTask$fare
+
+b <- (sd(alter)/sd(gezahlt))*cor(alter,gezahlt,method="pearson")
+c <- (sd(alter)/sd(gezahlt))*cor(alter,gezahlt,method="pearson")*mean(gezahlt)+mean(alter)
+
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Regressionsgerade",pch=20,type="n")
+abline(a=c,b=b,col="red",lwd = 3)
+
+```
+Wie man sieht sind die beiden geraden identisch. Außerdem kann man Folgern, das die Steigung sehr klein aber positiv ist, was bedeutet, das das Alter eine sehr kleine Auswirkung auf den Ticketpreis hat.
+
+
 
 ### Überprüfung der Hypothesen
 
 ## Ergebnispräsentation
 
 ## Teaminfos
+Benjamin Schur: Varianz,Standardabweichung,Lineare Regression,Kovarianz,Korrelation,Lineare Regression Teil 2
 

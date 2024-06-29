@@ -5,6 +5,7 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
+#load packages
 library(learnr)
 library(readxl)
 library(tidyverse)
@@ -12,7 +13,17 @@ library(DT)
 library(shiny)
 library(plotly)
 library(dplyr)
+
+#load dataset
 titanic <- read_xlsx("Titanic.xlsx")
+
+#code checking
+checker<-function(label,user_code,check_code,envir_result,evaluate_result,...){
+  list(message = check_code,correct = TRUE, location = "append")
+}
+tutorial_options(exercise.timelimit = 10, exercise.checker = checker)
+
+
 ```
 
 ## Datenbasis
@@ -61,10 +72,10 @@ Folgende Hypothesen haben wir aufgestellt und wollen diese im Verlauf dieses Tut
 
 Um die Daten aus einer Excel-Datei zu lesen, verwenden wir die 'readxl'-Bibliothek.
 ```{r readdata}
-salary <- read_xlsx("Titanic.xlsx")
+titanic <- read_xlsx("Titanic.xlsx")
 ```
 Für eine CSV-Datei würde der Befehl so lauten:<br>
-*salary <- read_csv("Titanic.csv")*
+*titanic <- read_csv("Titanic.csv")*
 
 Die Daten einer Erhebung werden in der Regel als **Rohdaten** oder **Urlisten** bezeichnet und wurden noch nicht bearbeitet.<br>
 Bei einer **Vollerehebung** werden bei der Datenerhebung alle statistischen Einheiten einer Grundgesamtheit erfasst. 
@@ -173,7 +184,7 @@ Im weitern Verlauf werden wir die "titanic_clean"-Tabelle nutzen, da diese entsp
 
 ### Mittelwert
 
-Der Mittelwert dient, wie der Name bereits sagt der Ermittlung des Durchschnittswerts eines Merkmals. Eine alternative Bezeichnung wäre das arithmetisches Mittel. Um den Mittelwert zu berechnen werden alle Daten einer Datenreihe addiert und anschließend durch die Anzahl der Beobachtungswerte geteilt.<br>
+Der **Mittelwert** dient, wie der Name bereits sagt der Ermittlung des Durchschnittswerts eines Merkmals. Eine alternative Bezeichnung wäre das arithmetisches Mittel. Um den Mittelwert zu berechnen werden alle Daten einer Datenreihe addiert und anschließend durch die Anzahl der Beobachtungswerte geteilt.<br>
 In R kann der Mittelwert mit der "mean()"-Funktion berechnet werden. Dafür müssen aber vorerst die Werte des entsprechenden Merkmals extrahiert werden. Wir nehmen dafür wieder das "Alter".
 
 ```{r extract age}
@@ -212,7 +223,45 @@ Die **Varianz** beschreibt ein Maß, das die Streuung der Werte eines Merkmals d
 Die Berechnung der Varianz erfolgt über die var()-Funktion.
 Bitte ließ wieder das "Alter" aus dem bereinigten Datensatz aus und berechne damit die Varianz.
 
+```{r variance, exercise = TRUE, exercise.eval = FALSE}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+```
+
+```{r variance-solution}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+alter <- titanic_cleanTask$age
+var(alter)
+```
+
+
 ### Standardabweichung
+
+Die **Standardabweichung** ist wie die Varianz ein Maß, dass die Streuung der Werte eines Merkmals definiert. Dieses Maß beschreibt in diesem Fall die Durchschnittliche Streuung um den Mittelwert. Dieses Maß lässt sich auf in R auf mehrere weißen bestimmen.<br>
+Eine Möglichkeit ist die bestimmung mithilfe der Varianz. Die Standardabweichung ist definiert als die Wurzel aus der Varianz. Die zweite Möglichkeit ist die verwendung der sd()-Funktion (**S**tandard **D**eviation).
+Bitte ließ wieder das "Alter" aus dem bereinigten Datensatz ein und berechne dann die Standardabweichung
+
+```{r sd, exercise = TRUE, exercise.eval = FALSE}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+```
+
+```{r sd-solution}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+alter <- titanic_cleanTask$age
+sd(alter)
+```
+
+```{r sd-check}
+"Super! Mit der Standardabweichung kannst du überprüfen ob das Alter tatsächlich durchschnittlich um +-14 Jahre vom Mittelwert 30 Jahre abweicht"
+```
+
 
 ### Lineare Regression
 

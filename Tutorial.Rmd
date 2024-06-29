@@ -208,7 +208,11 @@ titanic_cleanTask <- titanic %>%
   filter(!is.na(age)) %>%
   filter(age < 101)
 ```
+```{r median-hint}
+variable <- Datensatz$merkmal 
+"Welche Funktion benötige ich für die Berechnung des Medians?"
 
+```
 ```{r median-solution}
 titanic_cleanTask <- titanic %>%
   filter(!is.na(age)) %>%
@@ -228,6 +232,13 @@ titanic_cleanTask <- titanic %>%
   filter(!is.na(age)) %>%
   filter(age < 101)
 ```
+
+```{r variance-hint}
+variable <- Datensatz$merkmal 
+"Welche Funktion benötige ich für die Berechnung der Varianz?"
+
+```
+
 
 ```{r variance-solution}
 titanic_cleanTask <- titanic %>%
@@ -250,6 +261,12 @@ titanic_cleanTask <- titanic %>%
   filter(age < 101)
 ```
 
+```{r sd-hint}
+variable <- Datensatz$merkmal 
+"Welche Funktion benötige ich für die Berechnung der Standardabweichung?"
+
+```
+
 ```{r sd-solution}
 titanic_cleanTask <- titanic %>%
   filter(!is.na(age)) %>%
@@ -262,8 +279,23 @@ sd(alter)
 "Super! Mit der Standardabweichung kannst du überprüfen ob das Alter tatsächlich durchschnittlich um +-14 Jahre vom Mittelwert 30 Jahre abweicht"
 ```
 
-
 ### Lineare Regression
+
+**Lineare Regression* wird verwendet, um eine Beziehung zwischen einer abhängigen Variable (Kriterium) und einer unabhängigen Variable (Prädiktoren) vorherzusagen.<br>
+Ein Beispiel: Man könnte die Hypothese aufstellen, das Kinder und junge Erwachsene weniger Zahlen als ältere Personen.<br>
+Wir wollen also überprüfen, ob das Kriterium - die Fare, abhängig vom Alter - der Prädiktoren ist. Dafür können wir beide werte ersteinmal in ein Diagramm eintragen.
+
+```{r diagrammForLR}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+
+alter <- titanic_cleanTask$age
+gezahlt <- titanic_cleanTask$fare
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Streudiagramm Alter - TicketPreis",pch=20)
+```
+
+FÜr die Vorher
 
 ### Überprüfung der Hypothesen
 

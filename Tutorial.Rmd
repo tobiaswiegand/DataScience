@@ -335,16 +335,39 @@ abline(regression, col="red",lwd=5)
 
 Mithilfe dieser Gerade kannst du überprüfen, ob deine Hypothese wahr ist.<br>
 Für den zweiten Weg nutzen wir die Geradengleichung und brechnen die b und c werte. Der Vorteil dieser Methode ist es, das du auch ohne grafischen Plot deine Hypothese prüfen kannst. Denn ist der b Wert in der Geradengleichung positiv steigt diese und deine Hypothese wäre somit korrekt. Ist dieser negativ sinkt diese und deine Hypothese wäre falsch.<br>
-Für die Berechnung brauchst du die **Mittelwerte** die **Standardabweichungen** die **Kovarianz** und die **Korrelation** beider Merkmale. 
-
-### Kovarianz
-Die **Kovarianz** gibt an, in wiefern zwei Merkmale zusammenhängen, genauer, ob eine Variable ausschlaggebend für die Zu-oder abnahme einer anderen Variablen ist. Man kann die Kovarianz also nutzen um lineare Beziehungen zu prüfen.
+Für die Berechnung brauchst du die **Mittelwerte** die **Standardabweichungen** und die **Korrelation** beider Merkmale. 
 
 ### Korrelation
+Die **Korrelation** kann den zusammenhang zwischen zwei Variablen bestimmen. Dabei lässt sich folgendes folgern:<br>
+Wenn der Korrelationskoeffizient positiv ist, sind die beiden Variablen voneinander abhängig. In unserem Beispiel wären das das Alter und der Ticket-Preis. Die Korrelation kann jedoch keine Aussagen darüber treffen welches Merkmal das andere beeinflusst. Es herrscht also nicht unbedingt Kausalität.<br>
+Für lineare Beziehungen kann man den "Pearson-Korrelationskoeffizient" bestimmen. Dieser liegt immer zwischen -1 und +1.<br>
+Die Berechnung kann auch nur auf Merkmale angewendet werden die Kardinal skaliert sind.<br>
+Allgemein wird für die Korrelation die **cor(y~x)-Funktion** verwendet Um die Methode anzugeben kann noch das Argument **method="..."** übergeben werden.<br>
+Bestimme hier den Korrelationskoeffizienten des Ticket-Preises (fare) und des Alters (age).
+
+```{r korrelation, exercise = TRUE, exercise.eval = FALSE}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+```
+
+```{r korrelation-hint}
+"cor(y~x,method='...')"
+```
+```{r korrelation-solution}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+
+alter <- titanic_cleanTask$age
+gezahlt <- titanic_cleanTask$fare
+cor(alter,gezahlt,method="pearson")
+```
 
 ### Lineare Regression Teil 2
 Kommen wir nun zurück zum Beispiel aus dem ersten Teil der linearen Regression. Erzeugen wir zuerst wieder den Plot aus dem ersten Beispiel.<br>
-Im Anschluss können wir dann beide Geraden vergleichen.
+Im Anschluss können wir dann beide Geraden vergleichen.<br>
+Für eine bessere Übersicht ist der Scatterplot ausgeschalten
 
 ```{r diagrammForLRTwo}
 titanic_cleanTask <- titanic %>%

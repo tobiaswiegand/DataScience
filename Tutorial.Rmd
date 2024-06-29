@@ -8,7 +8,17 @@ runtime: shiny_prerendered
 library(learnr)
 library(readxl)
 library(tidyverse)
-salary <- read_xlsx("C:/Users/Tobi/OneDrive - reutlingen-university.de/Studium/Data Science-BigChungus/DatensatzBenni/Datensaetze/ITSalary2020.xlsx")
+library(DT)
+library(shiny)
+salary <- read_xlsx("ITSalary2020.xlsx")
+salary_short <- salary
+names(salary_short) <- sapply(names(salary_short), function(x) {
+  if (nchar(x) > 15) {
+    paste0(substr(x, 1, 12), "...")
+  } else {
+    x
+  }
+})
 ```
 
 ## Datenbasis
@@ -16,12 +26,12 @@ salary <- read_xlsx("C:/Users/Tobi/OneDrive - reutlingen-university.de/Studium/D
 ### Der Datensatz
 
 Der Datensatz stammt aus einer anonymen Umfrage und thematisiert die Durchschnittsgehälter von IT-Angestellten.
-Dabei liegt der Fokus der Umfrage auf die Bezahlung in Deutschland ([IT Salary Survey](https://www.kaggle.com/datasets/parulpandey/2020-it-salary-survey-for-eu-region)).
+Dabei liegt der Fokus der Umfrage auf der Bezahlung in Deutschland ([IT Salary Survey](https://www.kaggle.com/datasets/parulpandey/2020-it-salary-survey-for-eu-region)).
 
-Hier ein Ausschnitt aus der Tabelle
+Hier ein Ausschnitt aus der Tabelle:
 
-```{r view head}
-head(salary)
+```{r view head, echo = FALSE}
+datatable(head(salary_short, 10), options = list(pageLength = 5, scrollX = TRUE))
 ```
 
 ### Hypothesen
@@ -29,12 +39,53 @@ head(salary)
 Folgende Hypothesen haben wir aufgestellt und wollen diese im Verlauf dieses Tutorials Überprüfen:
 
 * Software Engineers werden im Schnitt am besten bezahlt.
-* Die Anzahl der beherrschten Sprachen korreliert nicht mit dem Verdienst.
+* Eine hohe Anzahl beherrschter Sprachen bedeutet einen hohen Verdienst.
+
 
 ## Datenaufbereitung
 
-## Datenanalyse
 
-## Ergebnispräsentation
+### Einlesen der Daten
 
-## Teaminfos
+Um die Daten aus einer Excel-Datei zu lesen, verwenden wir die 'readxl'-Bibliothek.
+```{r readdata}
+salary <- read_xlsx("ITSalary2020.xlsx")
+```
+Für eine CSV-Datei würde der Befehl so lauten:<br>
+*salary <- read_csv("ITSalary2020.csv")*
+
+Die Daten einer Erhebung werden in der Regel als **Rohdaten** oder **Urlisten** bezeichnet und wurden noch nicht bearbeitet.<br>
+Bei einer **Vollerehebung** werden bei der Datenerhebung alle statistischen Einheiten einer Grundgesamtheit erfasst. 
+Da dies in den meisten Fällen nicht möglich ist, erfolgt eine **Teilerhebung** in Form einer **Stichprobe**.<br>
+Dies ist auch hier der Fall gewesen.
+
+
+### Inkonsistenzen und Leerstellen beheben
+
+Da Rohdaten häufig unvollständig, inkonsistent oder fehlerbehaftet sind, muss im ersten Schritt eine **Datenbereinigung** stattfinden. 
+Hierbei werden die Daten vorverarbeitet und somit verändert, aufgefüllt oder auch gelöscht. <br>
+Was in einem konkreten Fall sinnvoll ist, hängt vom Datentyp, der Anwendung und Fragestellung ab.<br>
+Bekannte Beispiele für Dateninkonsistenzen sind Datumsangaben oder Länderbezeichnungen. Wo Datumsangaben bei unterschiedlichen Formaten mit Tools wie Excel oder R automatisch angepasst werden können, bedürfen Länderbezeichnungen oft manueller oder halbautomatische Lösungen.
+
+Eine besondere Aufmerksamkeit gilt auch dem Umgang mit fehlenden Daten, die sowohl bei selbst erhobenen, als auch bei extern bezogenen Datenquellen auftreten können.<br>
+Hierbei gibt es zwei gängige Methoden, fehlende Daten zu handhaben:
+
+#### Ausschluss von Daten
+
+Die einfachste Möglichkeit im Umgang mit fehlenden Daten ist der Ausschluss von Beobachtungen mit fehlenden Daten.<br>
+In R lassen sich die Einträge mit fehlenden Daten so finden:
+```{r findmissing}
+missing_values <- sum(is.na(salary))
+```
+
+Und so lassen sich diese Daten aus dem Datensatz entfernen:
+```{r delete missing}
+salary_clean <- na.omit(salary)
+```
+```{r nomissing, include=FALSE}
+salary_short <- na.omit(salary_short)
+```
+<br>
+<br>
+Für eine Zusammenfassung, wie die Datenaufbereitung in R funktioniert, kannst du dir dieses Video anschauen:<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/FcxiSwZcPvw?si=JeCbEg15XfJXCG5z" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>

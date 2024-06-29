@@ -10,6 +10,7 @@ library(readxl)
 library(tidyverse)
 library(DT)
 library(shiny)
+library(plotly)
 salary <- read_xlsx("ITSalary2020.xlsx")
 salary_short <- salary
 names(salary_short) <- sapply(names(salary_short), function(x) {
@@ -31,7 +32,7 @@ Dabei liegt der Fokus der Umfrage auf der Bezahlung in Deutschland ([IT Salary S
 Hier ein Ausschnitt aus der Tabelle:
 
 ```{r view head, echo = FALSE}
-datatable(head(salary_short, 10), options = list(pageLength = 5, scrollX = TRUE))
+datatable(salary_short, options = list(pageLength = 5, scrollX = TRUE))
 ```
 
 ### Hypothesen
@@ -85,7 +86,18 @@ salary_clean <- na.omit(salary)
 ```{r nomissing, include=FALSE}
 salary_short <- na.omit(salary_short)
 ```
+```{r echo=FALSE}
+datatable(salary_short, options = list(pageLength = 5, scrollX = TRUE))
+```
+
+#### Imputation
+
+Die andere Methode ist es, fehlende Daten durch "sinnvolle" Daten zu ersetzen. Hierbei werden am einfachsten Lagemaße wie Mittelwert, Median oder Modus als "sinnvolle" Werte verwendet. Aufwendigere Verfahren arbeiten mit speziellen Schätzern, die beispielsweise Regressionsverfahren verwenden.
 <br>
 <br>
 Für eine Zusammenfassung, wie die Datenaufbereitung in R funktioniert, kannst du dir dieses Video anschauen:<br>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/FcxiSwZcPvw?si=JeCbEg15XfJXCG5z" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+## Darstellung
+

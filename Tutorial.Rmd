@@ -11,15 +11,8 @@ library(tidyverse)
 library(DT)
 library(shiny)
 library(plotly)
+library(dplyr)
 titanic <- read_xlsx("Titanic.xlsx")
-titanic_short <- titanic
-names(titanic_short) <- sapply(names(titanic_short), function(x) {
-  if (nchar(x) > 15) {
-    paste0(substr(x, 1, 12), "...")
-  } else {
-    x
-  }
-})
 ```
 
 ## Datenbasis
@@ -57,7 +50,8 @@ datatable(titanic, options = list(pageLength = 5, scrollX = TRUE))
 Folgende Hypothesen haben wir aufgestellt und wollen diese im Verlauf dieses Tutorials Überprüfen:
 
 * Die Wahrscheinlichkeit als Frau zu überleben ist höher, als als Mann.
-* Die Wahrscheinlichkeit zu überleben, steigt mit der Wertigkeit der gebuchten Klasse.
+* Die Wahrscheinlichkeit zu überleben steigt mit der Wertigkeit der gebuchten Klasse.
+* Die Wahrscheinlichkeit zu überleben sinkt mit dem Anstieg des Alters.
 
 
 ## Datenaufbereitung
@@ -90,22 +84,71 @@ Hierbei gibt es zwei gängige Methoden, fehlende Daten zu handhaben:
 
 #### Ausschluss von Daten
 
-Die einfachste Möglichkeit im Umgang mit fehlenden Daten ist der Ausschluss von Beobachtungen mit fehlenden Daten.<br>
-In R lassen sich die Einträge mit fehlenden Daten so finden:
-```{r findmissing}
-missing_values <- sum(is.na(titanic))
+Die einfachste Möglichkeit im Umgang mit fehlenden Daten ist der Ausschluss von Beobachtungen mit fehlenden Daten.
+Dabei muss zuerst entschieden werden, welche Merkmale besonders wichtig für den Datensatz sind und welche nach möglichkeit keine **NULL-Werte** enthalten sollten.
+
+Welche von den vorherigen genannten Merkmalen könnten in unserem Datensatz besonders relevant sein (auch im Hinblick auf unsere Hypothesen)?
+
+```{r quiz1, echo=FALSE}
+question("Bitte wähle alle Merkmale aus, welche du für notwendig hältst.",
+         answer("Klasse", correct = TRUE, message = "Korrekt, das Merkmal 'Klasse' ist notwendig um die zweite Hypothese zu überprüfen."),
+         answer("Überlebt", correct = TRUE, message = "Da sich der Datensatz und unsere Hypothesen alle um das Überleben drehen, ist das Merkmal 'überlebt' auch zwingend notwendig."),
+         answer("Name", message = "* Name"),
+         answer("Geschlecht", correct = TRUE, message = "Auch das 'Geschlecht' wird benötigt, da hiermit die erste Hypothese überprüft werden kann."),
+         answer("Alter", correct = TRUE, message = "Letzten Endes benötigen wir noch das 'Alter', um die dritte Hypothese zu überprüfen."),
+         answer("Anzahl der Geschwister und Ehepartner auf dem Schiff", message = "* Anzahl der Geschwister und Ehepartner auf dem Schiff"),
+         answer("Anzahl der Eltern auf dem Schiff", message = "* Anzahl der Eltern auf dem Schiff"),
+         answer("Ticketnummer", message = "* Ticketnummer"),
+         answer("Ticketpreis", message = "* Ticketpreis"),
+         answer("Kabinennummer", message = "* Kabinennummer"),
+         answer("Zustiegshafen", message = "* Zustiegshafen"),
+         answer("Nummer des Rettungsboots", message = "* Nummer des Rettungsboots"),
+         answer("ID-Der Leiche", message = "* ID-Der Leiche"),
+         answer("Herkunft", message = "* Herkunft"),
+         type = "multiple",
+         incorrect = "Folgende Merkmale sind nicht notwendig:"
+         )
+```
+Da wir nun alle wichtigen Merkmale identifiziert haben, können wir uns darum kümmern, den Datensatz zu bereinigen.
+Hierfür bereinigen wir erst alle Einträge, welche keine Angaben bei unseren wichtigen Mermalen enthalten.
+Da der Datensatz von Natur aus keine NULL-Werte in den Spalten "überlebt", "Klasse" und "Geschlecht" enthält, müssen wir das nur noch für das Mermal "Alter" tun.
+
+Hierfür legen wir als erstes eine neue Tabelle mit dem Namen "titanic_clean" an:<br>
+
+```{r copy table}
+titanic_clean <- titanic
 ```
 
-Und so lassen sich diese Daten aus dem Datensatz entfernen:
+Anschließend entfernen wir mit Hilfe einer Filter-Funktion alle Zeilen mit NULL-Werten beim "Alter":<br>
+
 ```{r delete missing}
-titanic_clean <- na.omit(titanic)
+titanic_clean <- titanic_clean %>%
+  filter(!is.na(age))
+
+datatable(titanic_clean, options = list(pageLength = 5, scrollX = TRUE))
 ```
-```{r nomissing, include=FALSE}
-titanic_short <- na.omit(titanic_short)
+
+Wie zu erkennen ist, hat die Tabelle nun einige Seiten weniger und es sind keine NULL-Werte mehr beim "Alter" vorhanden.
+Als nächstes wollen wir noch alle unrealistischen Einträge entfernen. Hierfür beschränken wir uns wieder nur auf das "Alter", da dieses leicht einzuschätzen ist und die anderen wichtigen Merkmale keine fehlerhaften Werte enthalten.<br>
+Versuchen Sie nun alle Einträge mit einem höheren "Alter" als 100 zu entfernen. Der korrekte Name der Spalte ist dabei "age".
+
+```{r delete_unrealistic_age, exercise = TRUE, excercise.eval = FALSE}
+titanic_clean2 <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter()
+
+datatable(titanic_clean2, options = list(pageLength = 5, scrollX = TRUE))
 ```
-```{r echo=FALSE}
-datatable(titanic_short, options = list(pageLength = 5, scrollX = TRUE))
+
+```{r delete_unrealistic_age-solution}
+titanic_clean2 <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+
+datatable(titanic_clean2, options = list(pageLength = 5, scrollX = TRUE))
 ```
+<br>
+Wunderbar! Nun haben wir eine Tabelle, welche keine Fehlerhaften und unbrauchbaren Daten mehr enthält.<br>
 
 #### Imputation
 
@@ -116,6 +159,19 @@ Für eine Zusammenfassung, wie die Datenaufbereitung in R funktioniert, kannst d
 <iframe width="560" height="315" src="https://www.youtube.com/embed/FcxiSwZcPvw?si=JeCbEg15XfJXCG5z" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Datenanalyse
+
+
+### Mittelwert
+
+### Median
+
+### Varianz
+
+### Standardabweichung
+
+### Lineare Regression
+
+### Überprüfung der Hypothesen
 
 ## Ergebnispräsentation
 

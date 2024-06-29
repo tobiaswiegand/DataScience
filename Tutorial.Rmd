@@ -11,9 +11,9 @@ library(tidyverse)
 library(DT)
 library(shiny)
 library(plotly)
-salary <- read_xlsx("ITSalary2020.xlsx")
-salary_short <- salary
-names(salary_short) <- sapply(names(salary_short), function(x) {
+titanic <- read_xlsx("Titanic.xlsx")
+titanic_short <- titanic
+names(titanic_short) <- sapply(names(titanic_short), function(x) {
   if (nchar(x) > 15) {
     paste0(substr(x, 1, 12), "...")
   } else {
@@ -26,36 +26,38 @@ names(salary_short) <- sapply(names(salary_short), function(x) {
 
 ### Der Datensatz
 
-Der Datensatz stammt aus einer anonymen Umfrage und thematisiert die Durchschnittsgehälter von IT-Angestellten.
-Dabei liegt der Fokus der Umfrage auf der Bezahlung in Deutschland ([IT Salary Survey](https://www.kaggle.com/datasets/parulpandey/2020-it-salary-survey-for-eu-region)).
+Der in unserem Tutorial verwendete Datensatz stammt von der Website [Kaggle](https://www.kaggle.com/) und enthält Informationen über die Passagiere der Titanic.
+Der Datensatz ist weit verbreitet und wird oft für das Training von KI und Machine-Learning genutzt ([Titanic Dataset](https://www.kaggle.com/datasets/sakshisatre/titanic-dataset/data)).
 
-Die Merkmale der Umfrage sind folgende:
+Die Merkmale welche im Datensatz verwendet werden sind folgende:
 
-* Zeitstempel
-* Alter
+* Klasse
+* Überlebt (1=Ja, 0=Nein)
+* Name
 * Geschlecht
-* Stadt
-* Stellenbeschreibung
-* Berufserfahrung in Jahren
-* Berufserfahrung in Deurschland in Jahren
-* Erfahrungsgrad
-* Hauptsprache/ Technologie
-* Weitere Sprachen/ Technologien
-* jährliches Bruttogehalt
+* Alter
+* Anzahl der Geschwister und Ehepartner auf dem Schiff
+* Anzahl der Eltern auf dem Schiff
+* Ticketnummer
+* Ticketpreis
+* Kabinennummer
+* Zustiegshafen (Kürzel)
+* Nummer des Rettungsboots (wenn überlebt)
+* ID-Der Leiche (wenn gestorben)
+* Herkunft
 
 Hier ein Ausschnitt aus der Tabelle:
 
 ```{r view head, echo = FALSE}
-datatable(head(salary_short, 10), options = list(pageLength = 5, scrollX = TRUE))
-datatable(salary_short, options = list(pageLength = 5, scrollX = TRUE))
+datatable(titanic, options = list(pageLength = 5, scrollX = TRUE))
 ```
 
 ### Hypothesen
 
 Folgende Hypothesen haben wir aufgestellt und wollen diese im Verlauf dieses Tutorials Überprüfen:
 
-* Software Engineers werden im Schnitt am besten bezahlt.
-* Eine hohe Anzahl beherrschter Sprachen bedeutet einen hohen Verdienst.
+* Die Wahrscheinlichkeit als Frau zu überleben ist höher, als als Mann.
+* Die Wahrscheinlichkeit zu überleben, steigt mit der Wertigkeit der gebuchten Klasse.
 
 
 ## Datenaufbereitung
@@ -65,10 +67,10 @@ Folgende Hypothesen haben wir aufgestellt und wollen diese im Verlauf dieses Tut
 
 Um die Daten aus einer Excel-Datei zu lesen, verwenden wir die 'readxl'-Bibliothek.
 ```{r readdata}
-salary <- read_xlsx("ITSalary2020.xlsx")
+salary <- read_xlsx("Titanic.xlsx")
 ```
 Für eine CSV-Datei würde der Befehl so lauten:<br>
-*salary <- read_csv("ITSalary2020.csv")*
+*salary <- read_csv("Titanic.csv")*
 
 Die Daten einer Erhebung werden in der Regel als **Rohdaten** oder **Urlisten** bezeichnet und wurden noch nicht bearbeitet.<br>
 Bei einer **Vollerehebung** werden bei der Datenerhebung alle statistischen Einheiten einer Grundgesamtheit erfasst. 
@@ -91,18 +93,18 @@ Hierbei gibt es zwei gängige Methoden, fehlende Daten zu handhaben:
 Die einfachste Möglichkeit im Umgang mit fehlenden Daten ist der Ausschluss von Beobachtungen mit fehlenden Daten.<br>
 In R lassen sich die Einträge mit fehlenden Daten so finden:
 ```{r findmissing}
-missing_values <- sum(is.na(salary))
+missing_values <- sum(is.na(titanic))
 ```
 
 Und so lassen sich diese Daten aus dem Datensatz entfernen:
 ```{r delete missing}
-salary_clean <- na.omit(salary)
+titanic_clean <- na.omit(titanic)
 ```
 ```{r nomissing, include=FALSE}
-salary_short <- na.omit(salary_short)
+titanic_short <- na.omit(titanic_short)
 ```
 ```{r echo=FALSE}
-datatable(salary_short, options = list(pageLength = 5, scrollX = TRUE))
+datatable(titanic_short, options = list(pageLength = 5, scrollX = TRUE))
 ```
 
 #### Imputation
@@ -113,16 +115,9 @@ Die andere Methode ist es, fehlende Daten durch "sinnvolle" Daten zu ersetzen. H
 Für eine Zusammenfassung, wie die Datenaufbereitung in R funktioniert, kannst du dir dieses Video anschauen:<br>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/FcxiSwZcPvw?si=JeCbEg15XfJXCG5z" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-<<<<<<< HEAD
 ## Datenanalyse
-
-
 
 ## Ergebnispräsentation
 
-## Teaminfos## Teaminfos## Teaminfos
-=======
+## Teaminfos
 
-## Darstellung
-
->>>>>>> 7dc4b9e6eaaeeeb43d5547a18b2b76b7ba7f467b

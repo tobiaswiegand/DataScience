@@ -188,7 +188,7 @@ mean(alter)
 
 ### Median
 
-Der Median eines Datensatzes stellt den Wert dar, welcher genau in der Mitte liegt. Bei einer nach Größe sortierten Datenreihe wäre das der Wert, welcher sowohl links als auch rechts von sich gleich viele Werte hat. Darum wird der Median auch als Zentralwert bezeichnet.<br>
+Der **Median** eines Datensatzes stellt den Wert dar, welcher genau in der Mitte liegt. Bei einer nach Größe sortierten Datenreihe wäre das der Wert, welcher sowohl links als auch rechts von sich gleich viele Werte hat. Darum wird der Median auch als Zentralwert bezeichnet.<br>
 Die Berechnung des Medians in R erfolgt über die median()-Funktion.<br>
 Bitte lies wieder das "Alter" aus dem bereinigten Datensatz aus und berechne den Median.
 
@@ -207,6 +207,10 @@ median(alter)
 ```
 
 ### Varianz
+
+Die **Varianz** beschreibt ein Maß, das die Streuung der Werte eines Merkmals definiert - anders gesagt wie stark unterscheiden sich die Werte.<br> Eine höhere Varianz bedeutet, dass die Werte eines ausgesuchten Merkmals weiter auseinander liegen, während man aus einer niedrigen Varianz folgern kann, dass die Werte näher am Mittelwert liegen. Die Varianz ist allerdings nicht normiert weswegen es schwer zu berurteilen ist, ob diese groß oder klein ist. Eine Möglichkeit dies besser zu beurteilen ist die **Standardabweichung**<br>
+Die Berechnung der Varianz erfolgt über die var()-Funktion.
+Bitte ließ wieder das "Alter" aus dem bereinigten Datensatz aus und berechne damit die Varianz.
 
 ### Standardabweichung
 

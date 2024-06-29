@@ -28,6 +28,20 @@ names(salary_short) <- sapply(names(salary_short), function(x) {
 Der Datensatz stammt aus einer anonymen Umfrage und thematisiert die Durchschnittsgehälter von IT-Angestellten.
 Dabei liegt der Fokus der Umfrage auf der Bezahlung in Deutschland ([IT Salary Survey](https://www.kaggle.com/datasets/parulpandey/2020-it-salary-survey-for-eu-region)).
 
+Die Merkmale der Umfrage sind folgende:
+
+* Zeitstempel
+* Alter
+* Geschlecht
+* Stadt
+* Stellenbeschreibung
+* Berufserfahrung in Jahren
+* Berufserfahrung in Deurschland in Jahren
+* Erfahrungsgrad
+* Hauptsprache/ Technologie
+* Weitere Sprachen/ Technologien
+* jährliches Bruttogehalt
+
 Hier ein Ausschnitt aus der Tabelle:
 
 ```{r view head, echo = FALSE}
@@ -89,3 +103,11 @@ salary_short <- na.omit(salary_short)
 <br>
 Für eine Zusammenfassung, wie die Datenaufbereitung in R funktioniert, kannst du dir dieses Video anschauen:<br>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/FcxiSwZcPvw?si=JeCbEg15XfJXCG5z" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+## Datenanalyse
+
+
+
+## Ergebnispräsentation
+
+## Teaminfos

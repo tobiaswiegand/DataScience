@@ -133,22 +133,30 @@ Als nächstes wollen wir noch alle unrealistischen Einträge entfernen. Hierfür
 Versuchen Sie nun alle Einträge mit einem höheren "Alter" als 100 zu entfernen. Der korrekte Name der Spalte ist dabei "age".
 
 ```{r delete_unrealistic_age, exercise = TRUE, excercise.eval = FALSE}
-titanic_clean2 <- titanic %>%
+titanic_cleanTask <- titanic %>%
   filter(!is.na(age)) %>%
   filter()
 
-datatable(titanic_clean2, options = list(pageLength = 5, scrollX = TRUE))
+datatable(titanic_cleanTask, options = list(pageLength = 5, scrollX = TRUE))
 ```
 
 ```{r delete_unrealistic_age-solution}
-titanic_clean2 <- titanic %>%
+titanic_cleanTask <- titanic %>%
   filter(!is.na(age)) %>%
   filter(age < 101)
 
-datatable(titanic_clean2, options = list(pageLength = 5, scrollX = TRUE))
+datatable(titanic_cleanTask, options = list(pageLength = 5, scrollX = TRUE))
 ```
 <br>
 Wunderbar! Nun haben wir eine Tabelle, welche keine Fehlerhaften und unbrauchbaren Daten mehr enthält.<br>
+
+```{r new titanic_clean, include = FALSE}
+titanic_clean <- titanic_clean %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+
+datatable(titanic_clean, options = list(pageLength = 5, scrollX = TRUE))
+```
 
 #### Imputation
 
@@ -160,10 +168,43 @@ Für eine Zusammenfassung, wie die Datenaufbereitung in R funktioniert, kannst d
 
 ## Datenanalyse
 
+Da wir nun die Bereinigung erfolgreich durchgeführt haben, können wir mit der Datenanalyse fortfahren.
+Im weitern Verlauf werden wir die "titanic_clean"-Tabelle nutzen, da diese entsprechend der Aufgabe aus dem letzten Kapitel bereinigt wurde.
 
 ### Mittelwert
 
+Der Mittelwert dient, wie der Name bereits sagt der Ermittlung des Durchschnittswerts eines Merkmals. Eine alternative Bezeichnung wäre das arithmetisches Mittel. Um den Mittelwert zu berechnen werden alle Daten einer Datenreihe addiert und anschließend durch die Anzahl der Beobachtungswerte geteilt.<br>
+In R kann der Mittelwert mit der "mean()"-Funktion berechnet werden. Dafür müssen aber vorerst die Werte des entsprechenden Merkmals extrahiert werden. Wir nehmen dafür wieder das "Alter".
+
+```{r extract age}
+alter <- titanic_clean$age
+```
+
+Anschließend können wir den Mittelwert berechnen.
+
+```{r mittelwert}
+mean(alter)
+```
+
 ### Median
+
+Der Median eines Datensatzes stellt den Wert dar, welcher genau in der Mitte liegt. Bei einer nach Größe sortierten Datenreihe wäre das der Wert, welcher sowohl links als auch rechts von sich gleich viele Werte hat. Darum wird der Median auch als Zentralwert bezeichnet.<br>
+Die Berechnung des Medians in R erfolgt über die median()-Funktion.<br>
+Bitte lies wieder das "Alter" aus dem bereinigten Datensatz aus und berechne den Median.
+
+```{r median, exercise = TRUE, exercise.eval = FALSE}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+```
+
+```{r median-solution}
+titanic_cleanTask <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+alter <- titanic_cleanTask$age
+median(alter)
+```
 
 ### Varianz
 

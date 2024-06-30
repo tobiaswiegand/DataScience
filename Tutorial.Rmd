@@ -291,16 +291,12 @@ Ein Beispiel: Man könnte die Hypothese aufstellen, das Kinder und junge Erwachs
 Wir wollen also überprüfen, ob das Kriterium - der Ticket-Preis, abhängig vom Alter - der Prädiktoren ist. Dafür können wir beide werte ersteinmal in ein Diagramm eintragen.
 
 ```{r diagrammForLR}
-titanic_cleanTask <- titanic %>%
-  filter(!is.na(age)) %>%
-  filter(age < 101)
-
-alter <- titanic_cleanTask$age
-gezahlt <- titanic_cleanTask$fare
+alter <- titanic_clean$age
+gezahlt <- titanic_clean$fare
 plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Streudiagramm Alter - TicketPreis",pch=20)
 ```
 
-FÜr die Überprüfung des Zusammenhangs können wir dann eine sogennante **Regressionsgerade** benutzen. Da es sich hierbei um eine lineare Regression handelt hat diese die form y = bx + c.<br>
+Für die Überprüfung des Zusammenhangs können wir dann eine sogennante **Regressionsgerade** benutzen. Da es sich hierbei um eine lineare Regression handelt hat diese die form y = bx + c.<br>
 Dabei ist y der Kriteriumswert also der, den wir später vohersagen wollen und x der Prädiktorwert.<br>
 Für die Berechnung der Regressionsgeraden gibt es jetzt wieder zwei Möglichkeiten.<br>
 Die einfache Variante ist die Verwendung der in R eingebundenen **lm(subset ~ subset) Funktion**.<br>
@@ -375,12 +371,8 @@ Im Anschluss können wir dann beide Geraden vergleichen.<br>
 Für eine bessere Übersicht ist der Scatterplot ausgeschalten
 
 ```{r diagrammForLRTwo}
-titanic_cleanTask <- titanic %>%
-  filter(!is.na(age)) %>%
-  filter(age < 101)
-
-alter <- titanic_cleanTask$age
-gezahlt <- titanic_cleanTask$fare
+alter <- titanic_clean$age
+gezahlt <- titanic_clean$fare
 
 plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Regressionsgerade",pch=20,type="n")
 
@@ -408,12 +400,249 @@ plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Regressi
 abline(a=c,b=b,col="red",lwd = 3)
 
 ```
+
 Wie man sieht sind die beiden geraden identisch. Außerdem kann man Folgern, das die Steigung sehr klein aber positiv ist, was bedeutet, das das Alter eine sehr kleine Auswirkung auf den Ticketpreis hat.<br>
 Für weitere Fragen kannst du dir dieses Tutorial anschauen:
-![video](https://www.youtube.com/watch?v=5DcQ4B2aLuY&ab_channel=DATAtab){width = 50%}
+![video](https://www.youtube.com/watch?v=5DcQ4B2aLuY&ab_channel=DATAtab)
 
 
 ### Überprüfung der Hypothesen
+
+#### Hypothese 1: Die Wahrscheinlichkeit als Frau zu überleben ist höher, als als Mann.
+
+Um diese Hypothese zu überprüfen benötigen wir sowohl das Verhältnis überlebter Frauen zu der Gesamtanzahl, als auch das Verhältnis der überlebten Männer.
+Beginnen wir mit den Frauen. Hirfür verwenden wir wieder unsere Altersbereinigung aus den vorherigen Kapiteln. Für das Zählen von Einträgen kann der "count()"-Befehl verwendet werden.
+
+```{r survival_rate_women, exercise = TRUE, exercise.eval = FALSE}
+titanic_womenTotal <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+```
+
+```{r survival_rate_women-hint}
+"Am einfachsten ist es hierfür zwei Datensätze abzuspeichern und den Filter aus den vorherigen Aufgaben mit %>% zu erweitern.
+Anschließend kann eine einfache Rechnung durchgeführt werden "
+```
+
+```{r survival_rate_women-solution}
+titanic_womenTotal <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(sex == "female")
+
+titanic_womenSurvived <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(sex == "female") %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitFrauen <- sum(count(titanic_womenSurvived)) / sum(count(titanic_womenTotal))
+print(WahrscheinlichkeitFrauen)
+```
+
+Das ganze muss nun noch für die Männer durchgeführt werden.
+
+```{r survival_rate_men, exercise = TRUE, exercise.eval = FALSE}
+titanic_menTotal <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+```
+
+```{r survival_rate_men-solution}
+titanic_menTotal <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(sex == "male")
+
+titanic_menSurvived <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(sex == "male") %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitMaenner <- sum(count(titanic_menSurvived)) / sum(count(titanic_menTotal))
+print(WahrscheinlichkeitMaenner)
+```
+
+Nun haben wir die Überlebenswahrscheinlichkeit beider Geschlechter bestimmt und können diese somit vergleichen.
+Dabei ist zu erkennen, dass die Überlebenswahrscheinlichkeit einer Frau mit ca. 75,78% deutlich höher ist, als die der Männer mit ca. 21,3%.
+Die Hypothese ist somit bestätigt.
+
+#### Hypothese 2: Die Wahrscheinlichkeit zu überleben steigt mit der Wertigkeit der gebuchten Klasse.
+
+Um die nächste Hypothese zu überprüfen, können wir ähnlich vorgehen wie beim letzten Beispiel.
+Bestimmen Sie hierzu die Überlebenswahrscheinlichkeiten der einzelnen Klassen. Die korrekte Bezeichnung des Mermals lautet "pclass".
+
+```{r survival_rate_class, exercise = TRUE, exercise.eval = FALSE}
+titanic_class1Total <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101)
+```
+
+```{r survival_rate_class-hint}
+"Sie können den Code entweder mehrmals ausführen, oder mehrere Abfragen nacheinander aufrufen. Orientieren Sie sich dabei an der letzten Aufgabe."
+```
+
+```{r survival_rate_class-solution}
+titanic_class1Total <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(pclass == 1)
+
+titanic_class1Survived <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(pclass == 1) %>%
+  filter(survived == 1)
+
+class1 <- sum(count(titanic_class1Survived)) / sum(count(titanic_class1Total))
+print(class1)
+
+titanic_class2Total <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(pclass == 2)
+
+titanic_class2Survived <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(pclass == 2) %>%
+  filter(survived == 1)
+
+class2 <- sum(count(titanic_class2Survived)) / sum(count(titanic_class2Total))
+print(class2)
+
+titanic_class3Total <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(pclass == 3)
+
+titanic_class3Survived <- titanic %>%
+  filter(!is.na(age)) %>%
+  filter(age < 101) %>%
+  filter(pclass == 3) %>%
+  filter(survived == 1)
+
+class3 <- sum(count(titanic_class3Survived)) / sum(count(titanic_class3Total))
+print(class3)
+```
+
+Wie deutlich zu erkennen ist, kann auch diese Hypothese bestätigt werden. Die Überlebenswahrscheinlichkeit steigt nämlich sehr stark mit einer Zunahme der Klassenwertigkeit:
+
+* Klasse 3: 27,37%
+* Klasse 2: 44,36%
+* Klasse 1: 64,41%
+
+#### Hypothese 3: Die Wahrscheinlichkeit zu überleben sinkt mit dem Anstieg des Alters.
+
+Für die Überprüfung der dritten Hypothese müssen wir die Überlebenswahrscheinlichkeit für jedes Alter bestimmen. Da es aber kein Sinn ergeben würde die Berechnung für jedes Alter durchzuführen, bilden wir Merkmalsklassen. Hier eine Übersicht über unsere gewählten Klassen und die dazugehörigen Überlebenswahrscheinlichkeiten.
+<br>
+<br>
+**0 - 10 Jahre:**
+
+```{r klasse1}
+klasse1Total <- titanic_clean %>%
+  filter(age < 11)
+
+klasse1Survived <- titanic_clean %>%
+  filter(age < 11) %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitKlasse1 <- sum(count(klasse1Survived)) / sum(count(klasse1Total))
+print(WahrscheinlichkeitKlasse1)
+```
+
+**11 - 20 Jahre:**
+
+```{r klasse2}
+klasse2Total <- titanic_clean %>%
+  filter(age > 10 & age < 21)
+
+klasse2Survived <- titanic_clean %>%
+  filter(age > 10 & age < 21) %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitKlasse2 <- sum(count(klasse2Survived)) / sum(count(klasse2Total))
+print(WahrscheinlichkeitKlasse2)
+```
+
+**21 - 30 Jahre:**
+
+```{r klasse3}
+klasse3Total <- titanic_clean %>%
+  filter(age > 20 & age < 31)
+
+klasse3Survived <- titanic_clean %>%
+  filter(age > 20 & age < 31) %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitKlasse3 <- sum(count(klasse3Survived)) / sum(count(klasse3Total))
+print(WahrscheinlichkeitKlasse3)
+```
+
+**31 - 40 Jahre:**
+
+```{r klasse4}
+klasse4Total <- titanic_clean %>%
+  filter(age > 30 & age < 41)
+
+klasse4Survived <- titanic_clean %>%
+  filter(age > 30 & age < 41) %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitKlasse4 <- sum(count(klasse4Survived)) / sum(count(klasse4Total))
+print(WahrscheinlichkeitKlasse4)
+```
+
+**41 - 50 Jahre:**
+
+```{r klasse5}
+klasse5Total <- titanic_clean %>%
+  filter(age > 40 & age < 51)
+
+klasse5Survived <- titanic_clean %>%
+  filter(age > 40 & age < 51) %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitKlasse5 <- sum(count(klasse5Survived)) / sum(count(klasse5Total))
+print(WahrscheinlichkeitKlasse5)
+```
+
+**51 - 60 Jahre:**
+
+```{r klasse6}
+klasse6Total <- titanic_clean %>%
+  filter(age > 50 & age < 61)
+
+klasse6Survived <- titanic_clean %>%
+  filter(age > 50 & age < 61) %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitKlasse6 <- sum(count(klasse6Survived)) / sum(count(klasse6Total))
+print(WahrscheinlichkeitKlasse6)
+```
+
+**60+ Jahre:**
+
+```{r klasse7}
+klasse7Total <- titanic_clean %>%
+  filter(age > 60)
+
+klasse7Survived <- titanic_clean %>%
+  filter(age > 60) %>%
+  filter(survived == 1)
+
+WahrscheinlichkeitKlasse7 <- sum(count(klasse7Survived)) / sum(count(klasse7Total))
+print(WahrscheinlichkeitKlasse7)
+```
+
+Wie man bereits ohne grafische Darstellung erkennen kann, ist diese Hypothese nicht korrekt. Die höchste Überlebenswahrscheinlichkeit besteht dabei bei der Altersklasse zwischen 0 und 10 Jahren, gefolgt von den 51 - 60 jährigen.
+Diese Feststellung lässt sich auch aus der niedrigen Varianz ablesen.
+
+```{r varianz und standardabweichung}
+wahrscheinlichkeiten <- c(WahrscheinlichkeitKlasse1, WahrscheinlichkeitKlasse2, WahrscheinlichkeitKlasse3, WahrscheinlichkeitKlasse4, WahrscheinlichkeitKlasse5, WahrscheinlichkeitKlasse6, WahrscheinlichkeitKlasse7)
+var(wahrscheinlichkeiten)
+```
 
 ## Ergebnispräsentation
 
@@ -450,5 +679,7 @@ quiz(
 ```
 
 ## Teaminfos
-Benjamin Schur: Varianz,Standardabweichung,Lineare Regression,Korrelation,Lineare Regression Teil 2,Quiz
+**Benjamin Schur**: Varianz,Standardabweichung,Lineare Regression,Korrelation,Lineare Regression Teil 2,Quiz<br>
+**Tobias Wiegand**: Projektsetup, Datenbasis, Datenbereinigung, Mittelwert, Median, Hypothesentests<br>
+**Niklas Kretschmer**: Datenaufbereitung, Datenbereinigung
 

@@ -4,7 +4,7 @@ output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 #load packages
 library(learnr)
 library(readxl)
@@ -13,6 +13,9 @@ library(DT)
 library(shiny)
 library(plotly)
 library(dplyr)
+
+#options
+knitr::opts_chunk$set(echo = FALSE)
 
 #load dataset
 titanic <- read_xlsx("Titanic.xlsx")
@@ -248,7 +251,6 @@ alter <- titanic_cleanTask$age
 var(alter)
 ```
 
-
 ### Standardabweichung
 
 Die **Standardabweichung** ist wie die Varianz ein Maß, dass die Streuung der Werte eines Merkmals definiert. Dieses Maß beschreibt in diesem Fall die durchschnittliche Streuung um den Mittelwert. Dieses Maß lässt sich auf in R auf mehrere weißen bestimmen.<br>
@@ -278,6 +280,9 @@ sd(alter)
 ```{r sd-check}
 "Super! Mit der Standardabweichung kannst du überprüfen ob das Alter tatsächlich durchschnittlich um +-14 Jahre vom Mittelwert 30 Jahre abweicht"
 ```
+Für weitere Fragen kannst du dir dieses Tutorial anschauen:
+![video](https://www.youtube.com/watch?v=DoajoVvsw4Q&ab_channel=wirtconomy)
+
 
 ### Lineare Regression
 
@@ -342,7 +347,7 @@ Die **Korrelation** kann den zusammenhang zwischen zwei Variablen bestimmen. Dab
 Wenn der Korrelationskoeffizient positiv ist, sind die beiden Variablen voneinander abhängig. In unserem Beispiel wären das das Alter und der Ticket-Preis. Die Korrelation kann jedoch keine Aussagen darüber treffen welches Merkmal das andere beeinflusst. Es herrscht also nicht unbedingt Kausalität.<br>
 Für lineare Beziehungen kann man den "Pearson-Korrelationskoeffizient" bestimmen. Dieser liegt immer zwischen -1 und +1.<br>
 Die Berechnung kann auch nur auf Merkmale angewendet werden die Kardinal skaliert sind.<br>
-Allgemein wird für die Korrelation die **cor(y~x)-Funktion** verwendet Um die Methode anzugeben kann noch das Argument **method="..."** übergeben werden.<br>
+Allgemein wird für die Korrelation die **cor(y~x)-Funktion** verwendet Um die Methode,in unserem Fall Pearson, anzugeben kann noch das Argument **method="..."** übergeben werden.<br>
 Bestimme hier den Korrelationskoeffizienten des Ticket-Preises (fare) und des Alters (age).
 
 ```{r korrelation, exercise = TRUE, exercise.eval = FALSE}
@@ -403,14 +408,47 @@ plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Regressi
 abline(a=c,b=b,col="red",lwd = 3)
 
 ```
-Wie man sieht sind die beiden geraden identisch. Außerdem kann man Folgern, das die Steigung sehr klein aber positiv ist, was bedeutet, das das Alter eine sehr kleine Auswirkung auf den Ticketpreis hat.
-
+Wie man sieht sind die beiden geraden identisch. Außerdem kann man Folgern, das die Steigung sehr klein aber positiv ist, was bedeutet, das das Alter eine sehr kleine Auswirkung auf den Ticketpreis hat.<br>
+Für weitere Fragen kannst du dir dieses Tutorial anschauen:
+![video](https://www.youtube.com/watch?v=5DcQ4B2aLuY&ab_channel=DATAtab){width = 50%}
 
 
 ### Überprüfung der Hypothesen
 
 ## Ergebnispräsentation
 
+## Quiz
+```{r quiz, echo = FALSE}
+
+quiz(
+  question("Mit welcher Funktion wird in R Studio der Mittelwert berechnet?",
+      answer("middle(subset)", message="Falsch"),
+      answer("mean(subset)",correct = TRUE),
+      answer("meanValue(subset)",message = "Falsch"),
+      allow_retry = TRUE
+      ),
+  question("Wozu dient der Median",
+     answer("Berechnet wie stark Werte variieren",message="Falsch "),
+     answer("Berechnet den Wert der genau in der Mitte liegt",correct = TRUE),
+     answer("Berechnet den Wert von dem aller Werte den gleichen abstand haben",message = "Falsch"),
+     allow_retry = TRUE
+    ),
+  question("Was sagt die Korrelation aus?",
+    answer("Das Variablen abhängig voneinenader sind",correct = TRUE),
+    answer("Das die Variable a die Variable b beeinflusst",message = "Falsch, Korrelation heißt nicht Kausalität"),
+    answer("Das beide Variablen linear wachsen",message = "Falsch"),
+    allow_retry = TRUE
+          ),
+  question("Was bedeutet eine Korrelation von 0?",
+    answer("Eine starke positive Beziehung", message = "Falsch"),
+    answer("Eine starke negative Beziehung", message = "Falsch"),
+    answer("Keine lineare Beziehung", correct = TRUE),
+    allow_retry = TRUE
+    )
+  )
+
+```
+
 ## Teaminfos
-Benjamin Schur: Varianz,Standardabweichung,Lineare Regression,Kovarianz,Korrelation,Lineare Regression Teil 2
+Benjamin Schur: Varianz,Standardabweichung,Lineare Regression,Korrelation,Lineare Regression Teil 2,Quiz
 

@@ -13,9 +13,8 @@ library(DT)
 library(shiny)
 library(plotly)
 library(dplyr)
+library(ggplot2)
 
-#options
-knitr::opts_chunk$set(echo = FALSE)
 
 #load dataset
 titanic <- read_xlsx("Titanic.xlsx")
@@ -83,7 +82,6 @@ Für eine CSV-Datei würde der Befehl so lauten:<br>
 Die Daten einer Erhebung werden in der Regel als **Rohdaten** oder **Urlisten** bezeichnet und wurden noch nicht bearbeitet.<br>
 Bei einer **Vollerehebung** werden bei der Datenerhebung alle statistischen Einheiten einer Grundgesamtheit erfasst. 
 Da dies in den meisten Fällen nicht möglich ist, erfolgt eine **Teilerhebung** in Form einer **Stichprobe**.<br>
-Dies ist auch hier der Fall gewesen.
 
 
 ### Inkonsistenzen und Leerstellen beheben
@@ -91,25 +89,25 @@ Dies ist auch hier der Fall gewesen.
 Da Rohdaten häufig unvollständig, inkonsistent oder fehlerbehaftet sind, muss im ersten Schritt eine **Datenbereinigung** stattfinden. 
 Hierbei werden die Daten vorverarbeitet und somit verändert, aufgefüllt oder auch gelöscht. <br>
 Was in einem konkreten Fall sinnvoll ist, hängt vom Datentyp, der Anwendung und Fragestellung ab.<br>
-Bekannte Beispiele für Dateninkonsistenzen sind Datumsangaben oder Länderbezeichnungen. Wo Datumsangaben bei unterschiedlichen Formaten mit Tools wie Excel oder R automatisch angepasst werden können, bedürfen Länderbezeichnungen oft manueller oder halbautomatische Lösungen.
+Bekannte Beispiele für Dateninkonsistenzen sind Datumsangaben oder Länderbezeichnungen. Wo Datumsangaben bei unterschiedlichen Formaten mit Tools wie Excel oder R automatisch angepasst werden können, bedürfen Länderbezeichnungen oft manueller oder halbautomatischer Lösungen.
 
 Eine besondere Aufmerksamkeit gilt auch dem Umgang mit fehlenden Daten, die sowohl bei selbst erhobenen, als auch bei extern bezogenen Datenquellen auftreten können.<br>
 Hierbei gibt es zwei gängige Methoden, fehlende Daten zu handhaben:
 
 #### Ausschluss von Daten
 
-Die einfachste Möglichkeit im Umgang mit fehlenden Daten ist der Ausschluss von Beobachtungen mit fehlenden Daten.
-Dabei muss zuerst entschieden werden, welche Merkmale besonders wichtig für den Datensatz sind und welche nach möglichkeit keine **NULL-Werte** enthalten sollten.
+Die einfachste Möglichkeit im Umgang mit fehlenden Daten, ist der Ausschluss dieser Beobachtungen.
+Dabei muss zuerst entschieden werden, welche Merkmale besonders wichtig für den Datensatz sind und somit nach Möglichkeit keine **NULL-Werte** enthalten sollten.
 
 Welche von den vorherigen genannten Merkmalen könnten in unserem Datensatz besonders relevant sein (auch im Hinblick auf unsere Hypothesen)?
 
 ```{r quiz1, echo=FALSE}
 question("Bitte wähle alle Merkmale aus, welche du für notwendig hältst.",
-         answer("Klasse", correct = TRUE, message = "Korrekt, das Merkmal 'Klasse' ist notwendig um die zweite Hypothese zu überprüfen."),
+         answer("Klasse", correct = TRUE, message = "Korrekt, das Merkmal 'Klasse' ist notwendig, um die zweite Hypothese zu überprüfen."),
          answer("Überlebt", correct = TRUE, message = "Da sich der Datensatz und unsere Hypothesen alle um das Überleben drehen, ist das Merkmal 'überlebt' auch zwingend notwendig."),
          answer("Name", message = "* Name"),
          answer("Geschlecht", correct = TRUE, message = "Auch das 'Geschlecht' wird benötigt, da hiermit die erste Hypothese überprüft werden kann."),
-         answer("Alter", correct = TRUE, message = "Letzten Endes benötigen wir noch das 'Alter', um die dritte Hypothese zu überprüfen."),
+         answer("Alter", correct = TRUE, message = "Zuletzt benötigen wir noch das 'Alter', um die dritte Hypothese zu überprüfen."),
          answer("Anzahl der Geschwister und Ehepartner auf dem Schiff", message = "* Anzahl der Geschwister und Ehepartner auf dem Schiff"),
          answer("Anzahl der Eltern auf dem Schiff", message = "* Anzahl der Eltern auf dem Schiff"),
          answer("Ticketnummer", message = "* Ticketnummer"),
@@ -125,7 +123,7 @@ question("Bitte wähle alle Merkmale aus, welche du für notwendig hältst.",
 ```
 Da wir nun alle wichtigen Merkmale identifiziert haben, können wir uns darum kümmern, den Datensatz zu bereinigen.
 Hierfür bereinigen wir erst alle Einträge, welche keine Angaben bei unseren wichtigen Mermalen enthalten.
-Da der Datensatz von Natur aus keine NULL-Werte in den Spalten "überlebt", "Klasse" und "Geschlecht" enthält, müssen wir das nur noch für das Mermal "Alter" tun.
+Da der Datensatz von Natur aus keine NULL-Werte in den Spalten "überlebt", "Klasse" und "Geschlecht" enthält, müssen wir dies nur noch für das Merkmal "Alter" tun.
 
 Hierfür legen wir als erstes eine neue Tabelle mit dem Namen "titanic_clean" an:<br>
 
@@ -133,7 +131,7 @@ Hierfür legen wir als erstes eine neue Tabelle mit dem Namen "titanic_clean" an
 titanic_clean <- titanic
 ```
 
-Anschließend entfernen wir mit Hilfe einer Filter-Funktion alle Zeilen mit NULL-Werten beim "Alter":<br>
+Anschließend entfernen wir, mit Hilfe einer Filter-Funktion, alle Zeilen mit NULL-Werten beim "Alter":<br>
 
 ```{r delete missing}
 titanic_clean <- titanic_clean %>%
@@ -162,7 +160,7 @@ titanic_cleanTask <- titanic %>%
 datatable(titanic_cleanTask, options = list(pageLength = 5, scrollX = TRUE))
 ```
 <br>
-Wunderbar! Nun haben wir eine Tabelle, welche keine Fehlerhaften und unbrauchbaren Daten mehr enthält.<br>
+Wunderbar! Nun haben wir eine Tabelle, welche keine fehlerhaften und unbrauchbaren Daten mehr enthält.<br>
 
 ```{r new titanic_clean, include = FALSE}
 titanic_clean <- titanic_clean %>%
@@ -187,7 +185,7 @@ Im weitern Verlauf werden wir die "titanic_clean"-Tabelle nutzen, da diese entsp
 
 ### Mittelwert
 
-Der **Mittelwert** dient, wie der Name bereits sagt der Ermittlung des Durchschnittswerts eines Merkmals. Eine alternative Bezeichnung wäre das arithmetisches Mittel. Um den Mittelwert zu berechnen werden alle Daten einer Datenreihe addiert und anschließend durch die Anzahl der Beobachtungswerte geteilt.<br>
+Der **Mittelwert** dient, wie der Name bereits sagt, der Ermittlung des Durchschnittswerts eines Merkmals. Eine alternative Bezeichnung wäre das arithmetische Mittel. Um den Mittelwert zu berechnen werden alle Daten einer Datenreihe addiert und anschließend durch die Anzahl der Beobachtungswerte geteilt.<br>
 In R kann der Mittelwert mit der "mean()"-Funktion berechnet werden. Dafür müssen aber vorerst die Werte des entsprechenden Merkmals extrahiert werden. Wir nehmen dafür wieder das "Alter".
 
 ```{r extract age}
@@ -226,9 +224,9 @@ median(alter)
 
 ### Varianz
 
-Die **Varianz** beschreibt ein Maß, das die Streuung der Werte eines Merkmals definiert - anders gesagt wie stark unterscheiden sich die Werte.<br> Eine höhere Varianz bedeutet, dass die Werte eines ausgesuchten Merkmals weiter auseinander liegen, während man aus einer niedrigen Varianz folgern kann, dass die Werte näher am Mittelwert liegen. Die Varianz ist allerdings nicht normiert weswegen es schwer zu berurteilen ist, ob diese groß oder klein ist. Eine Möglichkeit dies besser zu beurteilen ist die **Standardabweichung**<br>
+Die **Varianz** beschreibt ein Maß, das die Streuung der Werte eines Merkmals definiert - anders gesagt, wie stark sich die Werte unterscheiden.<br> Eine höhere Varianz bedeutet, dass die Werte eines ausgesuchten Merkmals weiter auseinander liegen, während man aus einer niedrigen Varianz folgern kann, dass die Werte näher am Mittelwert liegen. Die Varianz ist allerdings nicht normiert, weswegen es schwer zu berurteilen ist, ob diese groß oder klein ist. Eine Möglichkeit dies besser zu beurteilen ist die **Standardabweichung**<br>
 Die Berechnung der Varianz erfolgt über die **var(subset)-Funktion**.
-Bitte ließ wieder das "Alter" aus dem bereinigten Datensatz aus und berechne damit die Varianz.
+Bitte lies wieder das "Alter" aus dem bereinigten Datensatz aus und berechne damit die Varianz.
 
 ```{r variance, exercise = TRUE, exercise.eval = FALSE}
 titanic_cleanTask <- titanic %>%
@@ -253,9 +251,9 @@ var(alter)
 
 ### Standardabweichung
 
-Die **Standardabweichung** ist wie die Varianz ein Maß, dass die Streuung der Werte eines Merkmals definiert. Dieses Maß beschreibt in diesem Fall die durchschnittliche Streuung um den Mittelwert. Dieses Maß lässt sich auf in R auf mehrere weißen bestimmen.<br>
-Eine Möglichkeit ist die bestimmung mithilfe der Varianz. Die Standardabweichung ist definiert als die Wurzel aus der Varianz. Die zweite Möglichkeit ist die verwendung der **sd(subset)-Funktion** (**S**tandard **D**eviation).
-Bitte ließ wieder das "Alter" aus dem bereinigten Datensatz ein und berechne dann die Standardabweichung
+Die **Standardabweichung** ist wie die Varianz ein Maß, das die Streuung der Werte eines Merkmals definiert. Dieses Maß beschreibt in diesem Fall die durchschnittliche Streuung um den Mittelwert. Die Standardabweichung lässt sich auf in R auf mehrere weisen bestimmen.<br>
+Eine Möglichkeit ist die Bestimmung mithilfe der Varianz. Die Standardabweichung ist definiert als die Wurzel aus der Varianz. Die zweite Möglichkeit ist die Verwendung der **sd(subset)-Funktion** (**S**tandard **D**eviation).
+Bitte lies wieder das "Alter" aus dem bereinigten Datensatz ein und berechne dann die Standardabweichung.
 
 ```{r sd, exercise = TRUE, exercise.eval = FALSE}
 titanic_cleanTask <- titanic %>%
@@ -287,8 +285,8 @@ Für weitere Fragen kannst du dir dieses Tutorial anschauen:
 ### Lineare Regression
 
 **Lineare Regression** wird verwendet, um eine Beziehung zwischen einer **abhängigen Variable (Kriterium)** und einer **unabhängigen Variable (Prädiktoren)** vorherzusagen.<br>
-Ein Beispiel: Man könnte die Hypothese aufstellen, das Kinder und junge Erwachsene weniger Zahlen als ältere Personen.<br>
-Wir wollen also überprüfen, ob das Kriterium - der Ticket-Preis, abhängig vom Alter - der Prädiktoren ist. Dafür können wir beide werte ersteinmal in ein Diagramm eintragen.
+Ein Beispiel: Man könnte die Hypothese aufstellen, dass Kinder und junge Erwachsene weniger für ihr Ticket zahlen als ältere Personen.<br>
+Wir wollen also überprüfen, ob das Kriterium, der Ticket-Preis, abhängig vom Alter, den Prädiktoren, ist. Dafür können wir beide Werte erst einmal in ein Diagramm eintragen.
 
 ```{r diagrammForLR}
 alter <- titanic_clean$age
@@ -297,10 +295,10 @@ plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Streudia
 ```
 
 Für die Überprüfung des Zusammenhangs können wir dann eine sogennante **Regressionsgerade** benutzen. Da es sich hierbei um eine lineare Regression handelt hat diese die form y = bx + c.<br>
-Dabei ist y der Kriteriumswert also der, den wir später vohersagen wollen und x der Prädiktorwert.<br>
+Dabei ist y der Kriteriumswert, also der, den wir später vohersagen wollen, und x der Prädiktorwert.<br>
 Für die Berechnung der Regressionsgeraden gibt es jetzt wieder zwei Möglichkeiten.<br>
 Die einfache Variante ist die Verwendung der in R eingebundenen **lm(subset ~ subset) Funktion**.<br>
-Mithilfe der **abline(data, col="gewünschteFarbe")-Funktion** kann diese dann ausgegeben werden.
+Mit Hilfe der **abline(data, col="gewünschteFarbe")-Funktion** kann diese dann ausgegeben werden.
 Füge in das untere Diagramm eine solche Regressionsgerade ein.
 
 ```{r diagrammForLRUser, exercise = TRUE, exercise.eval = FALSE}
@@ -311,7 +309,7 @@ titanic_cleanTask <- titanic %>%
 alter <- titanic_cleanTask$age
 gezahlt <- titanic_cleanTask$fare
 
-plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Streudiagramm Alter - TicketPreis",pch=20)
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticketpreis", main="Streudiagramm Alter - Ticketpreis",pch=20)
 
 ```
 ```{r diagrammForLRUser-hint}
@@ -327,24 +325,24 @@ titanic_cleanTask <- titanic %>%
 alter <- titanic_cleanTask$age
 gezahlt <- titanic_cleanTask$fare
 
-plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Streudiagramm Alter - TicketPreis",pch=20)
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticketpreis", main="Streudiagramm Alter - Ticketpreis",pch=20)
 
 regression <- lm(alter ~ gezahlt)
 abline(regression, col="red",lwd=5)
 
 ```
 
-Mithilfe dieser Gerade kannst du überprüfen, ob deine Hypothese wahr ist.<br>
-Für den zweiten Weg nutzen wir die Geradengleichung und brechnen die b und c werte. Der Vorteil dieser Methode ist es, das du auch ohne grafischen Plot deine Hypothese prüfen kannst. Denn ist der b Wert in der Geradengleichung positiv steigt diese und deine Hypothese wäre somit korrekt. Ist dieser negativ sinkt diese und deine Hypothese wäre falsch.<br>
+Mit Hilfe dieser Geraden kannst du überprüfen, ob deine Hypothese wahr ist.<br>
+Für den zweiten Weg nutzen wir die Geradengleichung und berechnen die b- und c-Werte. Der Vorteil dieser Methode ist es, deine Hypothese auch ohne grafischen Plot überprüfen zu können. Ist der b-Wert in der Geradengleichung nämlich positiv, steigt diese und deine Hypothese wäre somit korrekt. Ist er negativ, sinkt diese und deine Hypothese wäre falsch.<br>
 Für die Berechnung brauchst du die **Mittelwerte** die **Standardabweichungen** und die **Korrelation** beider Merkmale. 
 
 ### Korrelation
-Die **Korrelation** kann den zusammenhang zwischen zwei Variablen bestimmen. Dabei lässt sich folgendes folgern:<br>
-Wenn der Korrelationskoeffizient positiv ist, sind die beiden Variablen voneinander abhängig. In unserem Beispiel wären das das Alter und der Ticket-Preis. Die Korrelation kann jedoch keine Aussagen darüber treffen welches Merkmal das andere beeinflusst. Es herrscht also nicht unbedingt Kausalität.<br>
+Die **Korrelation** kann den Zusammenhang zwischen zwei Variablen bestimmen. Dabei lässt sich folgendes folgern:<br>
+Wenn der Korrelationskoeffizient positiv ist, sind die beiden Variablen voneinander abhängig. In unserem Beispiel wären das das Alter und der Ticketpreis. Die Korrelation kann jedoch keine Aussagen darüber treffen, welches Merkmal das andere beeinflusst. Es herrscht also nicht unbedingt Kausalität.<br>
 Für lineare Beziehungen kann man den "Pearson-Korrelationskoeffizient" bestimmen. Dieser liegt immer zwischen -1 und +1.<br>
-Die Berechnung kann auch nur auf Merkmale angewendet werden die Kardinal skaliert sind.<br>
-Allgemein wird für die Korrelation die **cor(y~x)-Funktion** verwendet Um die Methode,in unserem Fall Pearson, anzugeben kann noch das Argument **method="..."** übergeben werden.<br>
-Bestimme hier den Korrelationskoeffizienten des Ticket-Preises (fare) und des Alters (age).
+Die Berechnung kann auch nur auf Merkmale angewandt werden, die kardinal skaliert sind.<br>
+Allgemein wird für die Korrelation die **cor(y~x)-Funktion** verwendet. Um die Methode,in unserem Fall Pearson, anzugeben kann noch das Argument **method="..."** übergeben werden.<br>
+Bestimme hier den Korrelationskoeffizienten des Ticketpreises (fare) und des Alters (age).
 
 ```{r korrelation, exercise = TRUE, exercise.eval = FALSE}
 titanic_cleanTask <- titanic %>%
@@ -368,13 +366,13 @@ cor(alter,gezahlt,method="pearson")
 ### Lineare Regression Teil 2
 Kommen wir nun zurück zum Beispiel aus dem ersten Teil der linearen Regression. Erzeugen wir zuerst wieder den Plot aus dem ersten Beispiel.<br>
 Im Anschluss können wir dann beide Geraden vergleichen.<br>
-Für eine bessere Übersicht ist der Scatterplot ausgeschalten
+Für eine bessere Übersicht ist der Scatterplot ausgeschalten.
 
 ```{r diagrammForLRTwo}
 alter <- titanic_clean$age
 gezahlt <- titanic_clean$fare
 
-plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Regressionsgerade",pch=20,type="n")
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticketpreis", main="Regressionsgerade",pch=20,type="n")
 
 regression <- lm(alter ~ gezahlt)
 abline(regression, col="red",lwd=3)
@@ -384,8 +382,8 @@ Jetzt stellen wir die Regressionsgeradengleichung auf.<br>
 Diese hat die Form:
 **b = Standardabweichung(y)/Standardabweichung(x) * Korrelation**<br>
 **c = Standardabweichung(y)/Standardabweichung(x) * Korrelation * Mittelwert(x) + Mittelwert(y)**<br>
-**x** ist in unserem Fall das **Alter**<br>
-**y** ist der **Ticket-Preis**
+**x** ist in unserem Fall das **Alter**.<br>
+**y** ist der **Ticketpreis**.<br>
 ```{r equation}
 titanic_cleanTask <- titanic %>%
   filter(!is.na(age)) %>%
@@ -396,22 +394,22 @@ gezahlt <- titanic_cleanTask$fare
 b <- (sd(alter)/sd(gezahlt))*cor(alter,gezahlt,method="pearson")
 c <- (sd(alter)/sd(gezahlt))*cor(alter,gezahlt,method="pearson")*mean(gezahlt)+mean(alter)
 
-plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticket Preis", main="Regressionsgerade",pch=20,type="n")
+plot(gezahlt ~ alter,xlab="Alter der Person",ylab="Ticketpreis", main="Regressionsgerade",pch=20,type="n")
 abline(a=c,b=b,col="red",lwd = 3)
 
 ```
 
-Wie man sieht sind die beiden geraden identisch. Außerdem kann man Folgern, das die Steigung sehr klein aber positiv ist, was bedeutet, das das Alter eine sehr kleine Auswirkung auf den Ticketpreis hat.<br>
+Wie man sieht, sind die beiden Geraden identisch. Außerdem kann man folgern, dass die Steigung sehr klein aber positiv ist, was bedeutet, dass das Alter eine sehr kleine Auswirkung auf den Ticketpreis hat.<br>
 Für weitere Fragen kannst du dir dieses Tutorial anschauen:
 ![video](https://www.youtube.com/watch?v=5DcQ4B2aLuY&ab_channel=DATAtab)
 
 
 ### Überprüfung der Hypothesen
 
-#### Hypothese 1: Die Wahrscheinlichkeit als Frau zu überleben ist höher, als als Mann.
+#### Hypothese 1: Die Wahrscheinlichkeit als Frau zu überleben, ist höher als als Mann.
 
-Um diese Hypothese zu überprüfen benötigen wir sowohl das Verhältnis überlebter Frauen zu der Gesamtanzahl, als auch das Verhältnis der überlebten Männer.
-Beginnen wir mit den Frauen. Hirfür verwenden wir wieder unsere Altersbereinigung aus den vorherigen Kapiteln. Für das Zählen von Einträgen kann der "count()"-Befehl verwendet werden.
+Um diese Hypothese zu überprüfen, benötigen wir sowohl das Verhältnis der überlebten Frauen zur Gesamtanzahl als auch das der überlebten Männer.
+Beginnen wir mit den Frauen. Hierfür verwenden wir wieder unsere Altersbereinigung aus den vorherigen Kapiteln. Für das Zählen von Einträgen kann der "count()"-Befehl verwendet werden.
 
 ```{r survival_rate_women, exercise = TRUE, exercise.eval = FALSE}
 titanic_womenTotal <- titanic %>%
@@ -535,7 +533,7 @@ Wie deutlich zu erkennen ist, kann auch diese Hypothese bestätigt werden. Die �
 
 #### Hypothese 3: Die Wahrscheinlichkeit zu überleben sinkt mit dem Anstieg des Alters.
 
-Für die Überprüfung der dritten Hypothese müssen wir die Überlebenswahrscheinlichkeit für jedes Alter bestimmen. Da es aber kein Sinn ergeben würde die Berechnung für jedes Alter durchzuführen, bilden wir Merkmalsklassen. Hier eine Übersicht über unsere gewählten Klassen und die dazugehörigen Überlebenswahrscheinlichkeiten.
+Für die Überprüfung der dritten Hypothese müssen wir die Überlebenswahrscheinlichkeit für jedes Alter bestimmen. Da es aber keinen Sinn ergeben würde die Berechnung für jedes Alter durchzuführen, bilden wir Merkmalsklassen. Hier eine Übersicht über unsere gewählten Klassen und die dazugehörigen Überlebenswahrscheinlichkeiten.
 <br>
 <br>
 **0 - 10 Jahre:**
@@ -646,6 +644,250 @@ var(wahrscheinlichkeiten)
 
 ## Ergebnispräsentation
 
+Nun haben wir unsere drei aufgestellten Hypothesen belegen beziehungsweise widerlegen können. Zum Abschluss gilt es, die gefundenen Ergebnisse grafisch aufzuarbeiten und anschaulich darzustellen.<br>
+Je nach Ergebnis-/Datentyp, bieten sich dafür unterschiedliche Diagramme und Visualisierungsarten an.<br>
+<br>
+
+#### Balken- und Säulendiagramme
+
+Mit Hilfe dieser Diagramme lassen sich zum Beispiel Häufigkeiten sehr gut abbilden. Bei einem Balkendiagramm sind die einzelnen Balken senkrecht zur y-Achse angebracht, bei einem Säulendiagramm senkrecht zur x-Achse. Die Wahl der Form hängt von der Anwendung und Fragestellung ab.<br>
+<br>
+Hier sind beide Varianten mit der Anzahl der überlebenden in den zuvor festgelegten Altersklassen:
+
+``` {r säulenundbalken, echo= FALSE}
+surv_age <- data.frame(
+  Altersklasse = c("0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "60+"),
+  Überlebende = c(nrow(klasse1Survived), nrow(klasse2Survived), nrow(klasse3Survived),
+                  nrow(klasse4Survived), nrow(klasse5Survived), nrow(klasse6Survived),
+                  nrow(klasse7Survived))
+)
+
+ggplot(surv_age, aes(x=Überlebende, y=Altersklasse)) +
+  geom_bar(stat="identity", fill="blue") +
+  labs(title="Balkendiagramm",
+       x="Überlebende",
+       y="Altersklasse") +
+  theme_minimal()
+
+ggplot(surv_age, aes(x=Altersklasse, y=Überlebende)) +
+  geom_bar(stat="identity", fill="blue") +
+  labs(title="Säulendiagramm",
+       x="Altersklasse",
+       y="Überlebende") +
+  theme_minimal()
+
+```
+
+#### Kuchendiagramm
+
+Dieses Diagramm ist besonders geeignet, um relative Häufigkeiten visuell darzustellen.
+
+Auch hier kann man wieder die Überlebenden der verschiedenen Altersklassen darstellen. Diesmal allerdings in Relation zueinander:
+
+``` {r kuchen, echo= FALSE}
+ggplot(surv_age, aes(x="", y=Überlebende, fill=Altersklasse)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar(theta="y") +
+  labs(title="Kuchendiagramm der Überlebenden nach Altersklasse",
+       x="", y="") +
+  theme_void() +
+  theme(legend.title=element_blank())
+```
+
+#### Boxplot
+
+Ein Boxplot ermöglicht die Visualisierung der Verteilung der Werte eines Merkmals. Die dicke Linie in der Mitte des Plots zeigt den Median der Verteilung. Die obere und untere Begrenzungen der Box stellen die 25%-Quartile und 75%-Quartile dar. Die äüßeren Grenzlinien, die auch Whisker genannt werden, sind in ihrer Größe nicht immer fest definiert. Sie geben die maximalen, beziehungsweise minimalen Werte an, wenn diese nicht zu weit entfernt sind. Sind sie es doch, so ist das gängige Maß der oberen Linie das 75%-Quartil plus das 1,5-fache des Interquartilabstandes. Das Maß für die untere Linie ist dementsprechend das 25%-Quartil minus das 1,5-fache des Interquartilabstandes. Der Interquartilabstand ist die Differenz zwischen 75%-Quartil und 25%-Quartil. Werte die außerhalb dieser Grenzen liegen, werden als Außreißer in Form von Punkten dargestellt.<br>
+
+Hier ist ein Boxplot für das Alter der Überlebenden angezeigt:
+
+``` {r boxplot, echo= FALSE}
+titanic_survived <- titanic_clean %>% filter(survived == 1)
+ggplot(titanic_survived, aes(x=survived, y=age)) +
+  geom_boxplot(fill="blue", color="black", outlier.color="red", outlier.shape=16) +
+  labs(title="Boxplot für das Alter der Überlebenden",
+       x="Überlebt",
+       y="Alter") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank())
+```
+
+#### Liniendiagramm
+
+Der Einsatz von Liniendiagrammen ist nur bei stetigen Daten sinnvoll, da sonst Daten zwischen den messpunkten suggeriert werden, die es eigentlich nicht gibt.<br>
+
+Da in diesem Datensatz keine sequenziellen Daten vorliegen, ist es nicht sinnvoll Liniendiagramme einzusetzen.<br>
+Zur Veranschaulichung ist hier jedoch ein Beispiel mit den Ticketpreisen je Alter:
+
+``` {r linie, echo= FALSE}
+avg_fare_age <- titanic_clean %>%
+  group_by(age) %>%
+  summarise(fare = mean(fare, na.rm = TRUE)) %>%
+  ungroup()
+
+ggplot(avg_fare_age, aes(x=age, y=fare)) +
+  geom_line() +
+  labs(title="Durchschnittlicher Ticketpreis nach Alter",
+       x="Alter",
+       y="Durchschnittlicher Ticketpreis") +
+  theme_minimal()
+```
+
+#### Streudiagramm (Scatterplot)
+
+Ein Streudiagramm visualisiert dei Beziehung zweier Merkmale zueinander. Es ermöglicht eine erste, visuelle Einschätzung einer möglichen Korellation, welche durch Regressionsverfahren verbessert werden kann.<br>
+
+Hier ist ein Streudiagramm, das die Relation des Alters zum Ticketpreis aufzeigt:
+
+``` {r scatter, echo= FALSE}
+ggplot(titanic_clean, aes(x=age, y=fare)) +
+  geom_point() +
+  labs(title="Scatterplot zwischen Alter und Ticketpreis",
+       x="Alter",
+       y="Ticketpreis") +
+  theme_minimal()
+```
+
+#### Visualisierung Hypothese 1
+
+***Die Wahrscheinlichkeit als Frau zu überleben, ist höher als als Mann***.<br>
+
+Diese Hypothese konnten wir bereits belegen, indem wir festgestellt haben, dass die Wahrscheinlichkeit als Frau zu überleben mit 75,78% höher ist, als die eines Mannes mit 21,3%.
+
+```{r quizhyp1, echo=FALSE}
+  question("Welche Diagrammtypen bieten sich zur Visualisierung der Ergebnisse an?",
+    answer("Säulendiagramm", correct = TRUE),
+    answer("Kuchendiagramm", correct = TRUE),
+    answer("Boxplot", message = "* Boxplot ist nicht sinnvoll"),
+    answer("Liniendiagramm", message = "* Liniendiagramm ist nicht sinnvoll"),
+    answer("Streudiagramm", message = "* Streudiagramm ist nicht sinnvoll"),
+    type="multiple",
+    allow_retry = TRUE,
+    correct="Zur Visualisierung der Ergebnisse dieser Hypothese bieten sich besonders ein Säulen- oder ein Kuchendiagramm an. Bei beiden wird schnell ersichtlich, dass die Überlebenswahrscheinlichkeit einer Frau die eines Mannes deutlich übertrifft."
+  )
+```
+
+
+``` {r hypo1, echo= FALSE}
+prozente_hyp1 <- data.frame(
+  Geschlecht = c("Frau", "Mann"),
+  Wahrscheinlichkeit = c(75.78, 21.3)
+)
+
+ggplot(prozente_hyp1, aes(x=Geschlecht, y=Wahrscheinlichkeit)) +
+  geom_bar(stat="identity", fill="blue") +
+  labs(title="Säulendiagramm der Überlebenswahrscheinlichkeit nach Geschlecht",
+       x="Geschlecht",
+       y="Überlebenswahrscheinlichkeit") +
+  theme_minimal()
+
+ggplot(prozente_hyp1, aes(x="", y=Wahrscheinlichkeit, fill=Geschlecht)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar(theta="y") +
+  labs(title="Kuchendiagramm der Überlebenswahrscheinlichkeit nach Geschlecht",
+       x="", y="") +
+  theme_void() +
+  theme(legend.title=element_blank())
+```
+
+#### Visualisierung Hypothese 2
+
+***Die Wahrscheinlichkeit zu überleben steigt mit der Wertigkeit der gebuchten Klasse***.<br>
+
+Diese Hypothese konnte ebenfalls belegt werden, nachdem die Überlebenschancen der einzelnen Klassen errechnet wurden:
+* Klasse 3: 27,37%
+* Klasse 2: 44,36%
+* Klasse 1: 64,41%
+
+```{r quizhyp2, echo=FALSE}
+  question("Welche Diagrammtypen bieten sich zur Visualisierung der Ergebnisse an?",
+    answer("Säulendiagramm", correct = TRUE),
+    answer("Kuchendiagramm", message="* Kuchendiagramm ist nicht sinnvoll"),
+    answer("Boxplot", message = "* Boxplot ist nicht sinnvoll"),
+    answer("Liniendiagramm", correct = TRUE),
+    answer("Streudiagramm", message = "* Streudiagramm ist nicht sinnvoll"),
+    type="multiple",
+    allow_retry = TRUE,
+    correct = "Zur Visualisierung der Ergebnisse dieser Hypothese bieten sich ein Säulen- oder ein Liniendiagramm an. In beiden kann der Anstieg der Überlebenswahrscheinlichkeit mit höherer Klasse gut beobachtet werden."
+  )
+```
+
+
+``` {r hypo2, echo= FALSE}
+prozente_hyp2 <- data.frame(
+  Klasse = factor(c("Klasse 3", "Klasse 2", "Klasse 1"), levels = c("Klasse 3", "Klasse 2", "Klasse 1")),
+  Wahrscheinlichkeit = c(27.37, 44.36, 64.41)
+)
+
+ggplot(prozente_hyp2, aes(x=Klasse, y=Wahrscheinlichkeit)) +
+  geom_bar(stat="identity", fill="blue") +
+  labs(title="Säulendiagramm der Überlebenswahrscheinlichkeit nach Klasse",
+       x="Klasse",
+       y="Überlebenswahrscheinlichkeit") +
+  theme_minimal()
+
+ggplot(prozente_hyp2, aes(x=Klasse, y=Wahrscheinlichkeit, group=1)) +
+  geom_line() +
+  geom_point() +
+  labs(title="Liniendiagramm der Überlebenswahrscheinlichkeit nach Klasse",
+       x="Klasse",
+       y="Überlebenswahrscheinlichkeit") +
+  theme_minimal()
+```
+
+#### Visualisierung Hypothese 3
+
+***Die Wahrscheinlichkeit zu überleben sinkt mit dem Anstieg des Alters***.<br>
+
+Diese Hypothese wurde widerlegt, nachdem keine Kontinuität oder Tendenz in den Überlebenswahrscheinlichkeiten der Altersklassen festgestellt werden konnte.
+* 0-10 Jahre: 54%
+* 11-20 Jahre: 41,4%
+* 21-30 Jahre: 37,96%
+* 31-40 Jahre: 43,5%
+* 41-50 Jahre: 41,41%
+* 51-60 Jahre: 49,18%
+* 60+ Jahre: 40%
+
+
+```{r quizhyp3, echo=FALSE}
+  question("Welche Diagrammtypen bieten sich zur Visualisierung der Ergebnisse an?",
+    answer("Säulendiagramm", correct = TRUE),
+    answer("Kuchendiagramm", message="* Kuchendiagramm ist nicht sinnvoll"),
+    answer("Boxplot", message = "* Boxplot ist nicht sinnvoll"),
+    answer("Liniendiagramm", correct = TRUE),
+    answer("Streudiagramm", message = "* Streudiagramm ist nicht sinnvoll"),
+    type="multiple",
+    allow_retry = TRUE,
+    correct="Auch zur Visualisierung der Ergebnisse dieser Hypothese bieten sich ein Säulen- oder ein Liniendiagramm an. In beiden kann der Anstieg der Überlebenswahrscheinlichkeit mit höherer Klasse gut beobachtet werden."
+  )
+```
+
+
+``` {r hypo3, echo= FALSE}
+prozente_hyp3 <- data.frame(
+  Altersklasse = factor(c("0-10 Jahre", "11-20 Jahre", "21-30 Jahre", "31-40 Jahre", "41-50 Jahre", "51-60 Jahre", "60+ Jahre"),
+                        levels = c("0-10 Jahre", "11-20 Jahre", "21-30 Jahre", "31-40 Jahre", "41-50 Jahre", "51-60 Jahre", "60+ Jahre")),
+  Wahrscheinlichkeit = c(54, 41.4, 37.96, 43.5, 41.41, 49.18, 40)
+)
+
+ggplot(prozente_hyp3, aes(x=Altersklasse, y=Wahrscheinlichkeit)) +
+  geom_bar(stat="identity", fill="blue") +
+  labs(title="Säulendiagramm der Überlebenswahrscheinlichkeit nach Altersklasse",
+       x="Altersklasse",
+       y="Überlebenswahrscheinlichkeit") +
+  theme_minimal()
+
+ggplot(prozente_hyp3, aes(x=Altersklasse, y=Wahrscheinlichkeit, group=1)) +
+  geom_line() +
+  geom_point() +
+  labs(title="Liniendiagramm der Überlebenswahrscheinlichkeit nach Altersklasse",
+       x="Altersklasse",
+       y="Überlebenswahrscheinlichkeit") +
+  theme_minimal()
+```
+
+
+
+
 ## Quiz
 ```{r quiz, echo = FALSE}
 
@@ -656,19 +898,19 @@ quiz(
       answer("meanValue(subset)",message = "Falsch"),
       allow_retry = TRUE
       ),
-  question("Wozu dient der Median",
+  question("Wozu dient der Median?",
      answer("Berechnet wie stark Werte variieren",message="Falsch "),
      answer("Berechnet den Wert der genau in der Mitte liegt",correct = TRUE),
-     answer("Berechnet den Wert von dem aller Werte den gleichen abstand haben",message = "Falsch"),
+     answer("Berechnet den Wert, von dem alle Werte den gleichen Abstand haben",message = "Falsch"),
      allow_retry = TRUE
     ),
-  question("Was sagt die Korrelation aus?",
-    answer("Das Variablen abhängig voneinenader sind",correct = TRUE),
-    answer("Das die Variable a die Variable b beeinflusst",message = "Falsch, Korrelation heißt nicht Kausalität"),
-    answer("Das beide Variablen linear wachsen",message = "Falsch"),
+  question("Was sagt die Korellation aus?",
+    answer("Dass Variablen abhängig voneinenader sind",correct = TRUE),
+    answer("Dass die Variable a die Variable b beeinflusst",message = "Falsch, Korrelation heißt nicht Kausalität"),
+    answer("Dass beide Variablen linear wachsen",message = "Falsch"),
     allow_retry = TRUE
           ),
-  question("Was bedeutet eine Korrelation von 0?",
+  question("Was bedeutet eine Korellation von 0?",
     answer("Eine starke positive Beziehung", message = "Falsch"),
     answer("Eine starke negative Beziehung", message = "Falsch"),
     answer("Keine lineare Beziehung", correct = TRUE),
@@ -681,5 +923,5 @@ quiz(
 ## Teaminfos
 **Benjamin Schur**: Varianz,Standardabweichung,Lineare Regression,Korrelation,Lineare Regression Teil 2,Quiz<br>
 **Tobias Wiegand**: Projektsetup, Datenbasis, Datenbereinigung, Mittelwert, Median, Hypothesentests<br>
-**Niklas Kretschmer**: Datenaufbereitung, Datenbereinigung
+**Niklas Kretschmer**: Datenaufbereitung, Datenbereinigung, Ergebnispräsentation
 
